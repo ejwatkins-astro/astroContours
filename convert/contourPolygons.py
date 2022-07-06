@@ -12,8 +12,14 @@ from matplotlib.collections import PatchCollection
 import numpy as np
 import copy as copy
 import functools
+
+from .. import load
+from . import maskContours as mC
+
 import warnings
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
+
+
 
 def correct_dimension(func):
     def wrapper(self):
@@ -65,6 +71,37 @@ class ContoursAsPolygons():
         self.r = -1 # contours are usully yx, but polygon needs xy
         if are_contours_xy:
             self.r = 1
+
+    @classmethod
+    def from_file(cls, filename, convert_wcs=False,
+                  current_header=None, new_header=None,
+                  hdu_i=0, contour_dilation=0.5,
+                  touching_masks=True, fix_invalid_geometries=False):
+
+        data, current_header = load.Loader(filename, header=current_header, hdu_i=hdu_i).lazy_load()
+
+        cont_obj = mC.Contours(data, header=current_header,
+                               contour_dilation=contour_dilation,
+                               touching_masks=touching_masks)
+
+        return ContoursAsPolygons.from_contour_object(cont_obj, convert_wcs, current_header, new_header)
+
+    @classmethod
+    def from_contour_object(cls, contour_object, convert_wcs=False,
+                            current_header=None, new_header=None,
+                            fix_invalid_geometries=False):
+
+        are_contours_xy = False
+        if convert_wcs:
+            if new_header is not None:
+                contours, contour_ids = contour_object.convert_contours_yx_between_frames(new_header=new_header)
+            else:
+                contours, contour_ids = contour_object.get_contours_wcs()
+                are_contours_xy = True
+        else:
+            contours, contour_ids = contour_object.get_contours_yx()
+
+        return cls(contours, contour_ids, are_contours_xy=are_contours_xy, fix_invalid_geometries=fix_invalid_geometries)
 
     @functools.lru_cache
     def _get_holed_polygons(self):

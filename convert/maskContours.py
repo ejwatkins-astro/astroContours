@@ -62,7 +62,7 @@ class Contours:
 
     """
 
-    def __init__(self, labeled_mask_data, header=None, contour_dilation=0.5, touching_masks=False):
+    def __init__(self, labeled_mask_data, header=None, contour_dilation=0.5, touching_masks=True):
 
         data_shape = labeled_mask_data.shape
         if len(data_shape) == 2:
