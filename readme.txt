@@ -28,6 +28,8 @@ pickle:    a way to save data
 
 json       a way to save database data (usually dicts) in human readable format. It normally prefered over pickle for security reasons.
 
+Notes:
+Mask cataogue needs to have background values of zero, with the rest labelled using positive masks
 
 Here is an example using this for MUSE and JWST data
 ```python
@@ -164,7 +166,8 @@ for band in bands:
     data_jwst[data_jwst==0] = np.nan
 
     #touching_masks=True makes this a bit slow, if you know the masks do not touch
-    #set this to False and it will be mich fast
+    #set this to False and it will be much faster. `add_to_mask` needed for 
+    #Muse neb catalogue since it starts at -1, with first mask=0
     p_obj = poly.ContoursAsPolygons.from_file(mask_filepath, hdu_i=0, touching_masks=True, convert_wcs=True, new_header=header_jwst, add_to_mask=1)
 
     #make the patches
