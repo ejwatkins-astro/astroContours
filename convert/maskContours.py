@@ -23,8 +23,8 @@ plt.rcParams['mathtext.default'] = 'regular'
 
 #Decorator than removes extra dimentsions
 def correct_dimension(func):
-    def wrapper(self, *args):
-        output = func(self, *args)
+    def wrapper(self, *args, **kwargs):
+        output = func(self, *args, **kwargs)
         output_shape = np.shape(output)
         if len(output_shape) == 2 and output_shape[0] == 1:
             return output[0]
@@ -62,13 +62,13 @@ class Contours:
 
     """
 
-    def __init__(self, labeled_mask_data, header=None, contour_dilation=0.5, touching_masks=True):
+    def __init__(self, labeled_mask_data, header=None, contour_dilation=0.5, touching_masks=True, add_to_mask=0):
 
         data_shape = labeled_mask_data.shape
         if len(data_shape) == 2:
             self.labeled_mask_data = np.array([labeled_mask_data])
         else:
-            self.labeled_mask_data = labeled_mask_data
+            self.labeled_mask_data = labeled_mask_data + add_to_mask
 
         if header is not None:
             header = mf.remove_axis_from_fits_header(header, 4)
@@ -79,9 +79,9 @@ class Contours:
         self.touching_masks = touching_masks
 
     @classmethod
-    def from_fits_file(cls, filename, hdu_i=0, contour_dilation=0.5, touching_masks=True):
+    def from_fits_file(cls, filename, hdu_i=0, contour_dilation=0.5, touching_masks=True, add_to_mask=0):
         with fits.open(filename) as hdulist:
-            data = hdulist[hdu_i].data
+            data = hdulist[hdu_i].data + add_to_mask
             header = hdulist[hdu_i].header
         return cls(data, header, contour_dilation, touching_masks)
 

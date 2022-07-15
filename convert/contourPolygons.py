@@ -76,15 +76,16 @@ class ContoursAsPolygons():
     def from_file(cls, filename, convert_wcs=False,
                   current_header=None, new_header=None,
                   hdu_i=0, contour_dilation=0.5,
-                  touching_masks=True, fix_invalid_geometries=False):
+                  touching_masks=True, fix_invalid_geometries=False,
+                  add_to_mask=0):
 
         data, current_header = load.Loader(filename, header=current_header, hdu_i=hdu_i).lazy_load()
-
+        data += add_to_mask
         cont_obj = mC.Contours(data, header=current_header,
                                contour_dilation=contour_dilation,
                                touching_masks=touching_masks)
 
-        return ContoursAsPolygons.from_contour_object(cont_obj, convert_wcs, current_header, new_header)
+        return ContoursAsPolygons.from_contour_object(contour_object=cont_obj, convert_wcs=convert_wcs, current_header=current_header, new_header=new_header, fix_invalid_geometries=fix_invalid_geometries)
 
     @classmethod
     def from_contour_object(cls, contour_object, convert_wcs=False,
