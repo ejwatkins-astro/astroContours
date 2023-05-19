@@ -12,6 +12,8 @@ matplotlib
 astropy
 skimage
 
+NOTE: You might need to downgrade numpy due to some changes made in more recent numpy version (numpy<1.21 ?). I think I have made a work around, but I don't think it works if you use geopandas for analysis later
+
 Package requirements I expect you'll need to install:
 
 geopandas: awesome package for comparing, joining, analysing and visulising large shape catalogues (including polygons created from a mask catalogue
