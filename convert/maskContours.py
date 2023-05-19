@@ -281,13 +281,13 @@ def plot_contours(contour_yx_list, ax=None, reverse_yx=False, **kwargs):
         if reverse_yx:
             x, y  = y, x
 
-        ax.plot(x, y, **kwargs)
+        ax.plot(x, y, label=label, **kwargs)
 
-    x, y = cont[0,1], cont[0,0]
-    if reverse_yx:
-        x, y  = y, x
+    # x, y = cont[0,1], cont[0,0]
+    # if reverse_yx:
+    #     x, y  = y, x
 
-    ax.plot(x, y, label=label, **kwargs)
+    # ax.plot(x, y, label=label, **kwargs)
 
 def get_single_contour_from_3d_mask(mask3d, ids):
     """
@@ -306,7 +306,7 @@ def get_single_contour_from_3d_mask(mask3d, ids):
     contours = []
     contour_ids = []
     for i in range(1, len(ids)+1):
-        print(100*i/len(ids))
+        # print(100*i/len(ids))
         single_mask = np.zeros(mask3d.shape[1:])
         z, y, x = np.where(mask3d == i)
         single_mask[y, x] = i

@@ -59,6 +59,8 @@ class ContoursAsPolygons():
 
         if len(np.shape(contour_ids)) == 1:
             self.contour_ids = [contour_ids]
+        else:
+            self.contour_ids = contour_ids
         if len(np.shape(contours)) == 1:
             self.contours = [contours]
         else:
@@ -268,7 +270,14 @@ def get_holed_polygons_from_contours(contours_yx, contour_ids, r=-1, fix_invalid
                 polygon_contours_xy_copy[j] = holey_contour
 
         #deleting holes now that they have been dealt with
-        polygon_contours_xy_copy = np.delete(polygon_contours_xy_copy, hole_posistion_indices)
+        # polygon_contours_xy_copy = np.delete(polygon_contours_xy_copy, hole_posistion_indices)
+        # contour_ids = np.delete(contour_ids, hole_posistion_indices)
+
+        #deleting holes now that they have been dealt with
+        holes_sort_ind_biggest = np.sort(hole_posistion_indices)[::-1]
+        for ind_remove in holes_sort_ind_biggest:
+            del  polygon_contours_xy_copy[ind_remove]
+
         contour_ids = np.delete(contour_ids, hole_posistion_indices)
 
     return polygon_contours_xy_copy, contour_ids

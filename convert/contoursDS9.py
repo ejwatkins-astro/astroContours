@@ -17,6 +17,23 @@ from .. import maskContoursUtility as m2c
 
 # import mask_into_contours as cont
 
+accepted_ds9_region_types = {
+    'circle_sky': regions.shapes.circle.CircleSkyRegion,
+    'circle_pix': regions.shapes.circle.CirclePixelRegion,
+    'ellipse_sky':regions.shapes.ellipse.EllipseSkyRegion,
+    'ellipse_pix':regions.shapes.ellipse.EllipsePixelRegion,
+    'polygon_sky':regions.shapes.polygon.PolygonSkyRegion,
+    'polygon_pix':regions.shapes.polygon.PolygonPixelRegion
+}
+
+
+
+def get_ds9_region_type(region):
+    for key in accepted_ds9_region_types.keys():
+        if accepted_ds9_region_types[key] == type(region):
+            region_type = str(key)
+
+
 class ds9_regions_contours():#cont.Contours):
 
     def __init__(self, ds9_region_file, header=None):
@@ -146,16 +163,6 @@ def convert_hst_reg_to_standard_reg(hst_ds9_regions, wcs_projection='fk5', regio
 
 # ds9 = ds9_regions_contours(filepath)
 # contours_wcs = ds9.get_contours_wcs_fk5()
-
-
-
-
-
-
-
-
-
-
 
 
 # with open (filepath, "r") as myfile:

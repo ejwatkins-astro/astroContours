@@ -8,6 +8,7 @@ Created on Wed Nov  4 15:43:22 2020
 from astropy.wcs import WCS
 from astropy.io import fits
 from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import LogLocator
 import matplotlib.gridspec as gridspec
 
 from matplotlib import ticker
@@ -53,7 +54,6 @@ def get_fits_file_info(fits_file_name, *header_info) :
     with fits.open('%s' % fits_file_name) as hdulist:     # importing fits file
 
         data = hdulist[0].data
-        #print(repr(hdulist[0].header))
         if header_info == ():
             header_info_array = hdulist[0].header
 
@@ -82,7 +82,6 @@ def get_fits_file_info_e(fits_file_name, extention=0, *header_info) :
     with fits.open(fits_file_name) as hdulist:     # importing fits file
 
         data = hdulist[extention].data
-        #print(repr(hdulist[0].header))
         if header_info == ():
             header_info_array = hdulist[extention].header
 
@@ -151,7 +150,6 @@ def subfigure_wsc(figure_number, fits_headers, fontsize='medium',\
     #if just 1 plot, migh enter header not in a list format.
     if not isinstance(fits_headers, list):
         fits_headers = [fits_headers]
-    print(len(fits_headers))
     set_wcs_grid = set_wcs_type(fits_headers[0], wsc_type)
 
     fig, gs = create_gsgrid(figure_number, plot_gridding)
@@ -366,3 +364,56 @@ def minor_tickers(ax_object=None, **kwargs):
         ax_object.yaxis.set_minor_locator(minorLocator)
 
     scientific_tickers(ax_object, **kwargs)
+
+def colorbar_subplot(ax, im, label='', fontsize='medium',  logged=False, width=0.02, nticks=4, use_gridspec=False, **kwargs):
+
+    fig = plt.gcf()
+    cax = fig.add_axes([ax.get_position().x1-0.001, ax.get_position().y0, width, ax.get_position().height])
+
+    if logged:
+        cbar = plt.colorbar(im, cax=cax, pad=0, ticks = LogLocator(subs=range(10)), use_gridspec=use_gridspec)
+    else:
+        cbar = plt.colorbar(im, cax=cax, pad=0, use_gridspec=use_gridspec)
+        tick_locator = ticker.MaxNLocator(nbins=nticks)
+        cbar.locator = tick_locator
+
+    cbar.ax.tick_params(labelsize=fontsize, length=4, width=1.1, color='k', rotation=90)
+    if label != '':
+        cbar.set_label(label,fontsize=fontsize, labelpad=7)
+    cbar.ax.tick_params(which='minor', color='k', rotation=90, length=2, width=1.1)
+
+    cbar.update_ticks()
+    if not logged:
+        cbar.ax.minorticks_on()
+
+    return cbar
+
+def colorbar_top(ax, im, label, fontsize='medium',  logged=False, **kwargs):
+
+
+    fig = plt.gcf()
+    cax = fig.add_axes([ax.get_position().x0, ax.get_position().y1-0.02, ax.get_position().width, 0.02])
+
+    if logged:
+        cbar = plt.colorbar(im, cax=cax, ticks = LogLocator(subs=range(10)), orientation='horizontal')
+    else:
+        cbar = plt.colorbar(im, cax=cax, orientation='horizontal', use_gridspec=False)
+        # tick_locator = ticker.MaxNLocator(nbins=4)
+        # cbar.locator = tick_locator
+
+    cbar.set_alpha(1)
+    cbar.draw_all()
+
+    cax.xaxis.tick_top()
+    cbar.ax.xaxis.set_label_position('top')
+
+    cbar.ax.tick_params(labelsize=fontsize, length=8, width=1.1, color='k')
+    cbar.set_label(label,fontsize=fontsize)
+    cbar.ax.tick_params(which='minor', color='k', length=4, width=1.1)
+
+
+    cbar.update_ticks()
+    if not logged:
+        cbar.ax.minorticks_on()
+
+    return cbar
